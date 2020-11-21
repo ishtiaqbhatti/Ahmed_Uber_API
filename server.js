@@ -29,26 +29,28 @@ const swaggerOptions = {
     info: {
       title: "Starter API",
       description: "API built in Nodejs",
-      servers: [`http://localhost:${process.env.PORT}`]
-    }
+      servers: [`http://localhost:${process.env.PORT}`],
+    },
   },
   apis: ["routes/auth.js"],
   components: {
     bearerAuth: {
       type: "http",
       schema: "bearer",
-      bearerFormat: "JWT"
-    }
+      bearerFormat: "JWT",
+    },
   },
   security: {
-    bearerAuth: []
-  }
+    bearerAuth: [],
+  },
 };
 
 const swaggerDocs = swaggerJsDoc(swaggerOptions);
 app.use("/api-docs", swaggerUi.serve, swaggerUi.setup(swaggerDocs));
 const auth = require("./routes/auth");
-
+const captain = require("./routes/captain");
+const admin = require("./routes/admin");
+const trip = require("./routes/trip");
 // parse application/x-www-form-urlencoded
 app.use(bodyParser.urlencoded({ extended: false }));
 
@@ -75,7 +77,7 @@ app.use(xss());
 // Rate limiting
 const limiter = rateLimit({
   windowMs: 10 * 60 * 1000, // 10 mins
-  max: 100
+  max: 100,
 });
 app.use(limiter);
 
@@ -89,6 +91,9 @@ app.use(cors());
 app.use(express.static(path.join(__dirname, "public")));
 
 app.use("/api/auth", auth);
+app.use("/api/captain", captain);
+app.use("/api/admin", admin);
+app.use("/api/trip", trip);
 
 app.use(errorHandler);
 

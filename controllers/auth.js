@@ -8,15 +8,16 @@ const ErrorResponse = require("../utils/errorResponse");
 // @access  Public
 
 exports.registerUser = asyncHandler(async (req, res, next) => {
-  const { userName, password, role, department } = req.body;
+  const { phoneNumber } = req.body;
+
   // Check if user already exists
-  const isFound = await User.findOne({ userName });
+  const isFound = await User.findOne({ phoneNumber });
   if (isFound) return next(new ErrorResponse("User already exists", 409));
   // Create user
-  const user = await User.create({ userName, password, role, department });
+  const user = await User.create(req.body);
   return res.status(200).json({
     success: 1,
-    message: `User with role ${user.role} successfully created`
+    message: `User with role ${user.role} successfully created`,
   });
 });
 
@@ -24,18 +25,18 @@ exports.registerUser = asyncHandler(async (req, res, next) => {
 // @route     POST /api/auth/login
 // @access    Public
 exports.login = asyncHandler(async (req, res, next) => {
-  const { userName, password } = req.body;
+  const { phoneNumber, password } = req.body;
 
   // Validate emil & password
-  if (!userName || !password) {
+  if (!phoneNumber || !password) {
     return next(
-      new ErrorResponse("Please provide an userName and password", 400)
+      new ErrorResponse("Please provide an phone Number and password", 400)
     );
   }
 
   // Check for user
   const user = await User.findOne({
-    $and: [{ userName }, { password }]
+    $and: [{ phoneNumber }, { password }],
   });
 
   if (!user) {
@@ -51,12 +52,12 @@ exports.login = asyncHandler(async (req, res, next) => {
 exports.logout = asyncHandler(async (req, res, next) => {
   res.cookie("token", "none", {
     expires: new Date(Date.now() + 10 * 1000),
-    httpOnly: true
+    httpOnly: true,
   });
 
   res.status(200).json({
     success: true,
-    data: {}
+    data: {},
   });
 });
 
@@ -66,7 +67,7 @@ exports.getUsers = asyncHandler(async (req, res, next) => {
   const users = await User.find({});
   res.status(200).json({
     success: true,
-    data: users
+    data: users,
   });
 });
 
@@ -76,7 +77,7 @@ exports.getUserById = asyncHandler(async (req, res, next) => {
   const user = await User.find({ _id: req.params.id });
   res.status(200).json({
     success: true,
-    data: user
+    data: user,
   });
 });
 
@@ -87,7 +88,7 @@ exports.updateUserById = asyncHandler(async (req, res, next) => {
   const user = await User.findOneAndUpdate({ _id: id }, userData);
   res.status(200).json({
     success: true,
-    data: user
+    data: user,
   });
 });
 
@@ -98,7 +99,7 @@ exports.deleteUserById = asyncHandler(async (req, res, next) => {
   const user = await User.findOneAndDelete({ _id: id }, userData);
   res.status(200).json({
     success: true,
-    data: user
+    data: user,
   });
 });
 
@@ -106,12 +107,12 @@ exports.deleteUserById = asyncHandler(async (req, res, next) => {
 exports.getUserStats = asyncHandler(async (req, res, next) => {
   const stats = await User.aggregate([
     { $match: {} },
-    { $group: { _id: "$role", total: { $sum: 1 } } }
+    { $group: { _id: "$role", total: { $sum: 1 } } },
   ]);
 
   res.status(200).json({
     success: true,
-    data: stats
+    data: stats,
   });
 });
 
@@ -124,7 +125,7 @@ const sendTokenResponse = (user, statusCode, res) => {
     expires: new Date(
       Date.now() + process.env.JWT_COOKIE_EXPIRE * 24 * 60 * 60 * 1000
     ),
-    httpOnly: true
+    httpOnly: true,
   };
 
   if (process.env.NODE_ENV === "production") {
@@ -133,6 +134,6 @@ const sendTokenResponse = (user, statusCode, res) => {
 
   res.status(statusCode).cookie("token", token, options).json({
     success: true,
-    token
+    token,
   });
 };
