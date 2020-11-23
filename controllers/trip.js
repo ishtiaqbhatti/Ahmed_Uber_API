@@ -44,3 +44,9 @@ exports.getTripById = asyncHandler(async (req, res, next) => {
     data: trip,
   });
 });
+
+const calculateTripCost = () => {
+  const startingCost = 1.5;
+  const distance = 10;
+  return startingCost + distance * 0.2;
+};
