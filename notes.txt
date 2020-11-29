@@ -1,0 +1,5 @@
+- Establisth Connect with io.connection
+- Passenger request - lat, lang, passengerId
+- Broadcast to all captains io.broadcast('from, to, distance, cost)
+- Recieve request from captain and create a new trip
+- Broadcast trip to all connected usere

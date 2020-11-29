@@ -1,6 +1,7 @@
 const asyncHandler = require("../middleware/async");
 
 const Captain = require("../models/Captain");
+const Trip = require("../models/Trip");
 const User = require("../models/User");
 const ErrorResponse = require("../utils/errorResponse");
 
@@ -46,5 +47,18 @@ exports.getAllCaptainsByLevel = asyncHandler(async (req, res, next) => {
   return res.status(200).json({
     success: 1,
     data: captainsByLevel,
+  });
+});
+
+exports.getTotalTripsCompleted = asyncHandler(async (req, res, next) => {
+  const { id } = req.params;
+  const tripsCompleted = await Trip.find({
+    captainId: id,
+    "status.completed": true,
+  });
+  return res.status(200).json({
+    success: 1,
+    total: tripsCompleted.length,
+    data: tripsCompleted,
   });
 });

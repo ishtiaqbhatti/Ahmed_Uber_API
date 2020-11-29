@@ -9,19 +9,19 @@ const ErrorResponse = require("../utils/errorResponse");
 // @access  Public
 
 exports.createTrip = asyncHandler(async (req, res, next) => {
-  const from = {
-    type: "Point",
-    coordinates: [4.54177, 46.689968],
-  };
+  const { from, to, passengerId, captainId, paymentMethod, cost } = req.body;
 
-  const to = {
-    type: "Point",
-    coordinates: [4.564888, 46.67731],
-  };
   const trip = await Trip.create({
     from,
     to,
+    passengerId,
+    captainId,
+    cost,
+    paymentMethod,
   });
+
+  trip.status.assigned = true;
+  trip.save();
   return res.status(200).json({
     success: 1,
     message: `Trip succesfully created ${trip}`,
@@ -45,8 +45,18 @@ exports.getTripById = asyncHandler(async (req, res, next) => {
   });
 });
 
-const calculateTripCost = () => {
-  const startingCost = 1.5;
-  const distance = 10;
-  return startingCost + distance * 0.2;
-};
+exports.cancelTrip = asyncHandler(async (req, res, next) => {
+  const { tripId } = req.body;
+  const trip = await Trip.findOne({ tripId, active });
+  if (trip) {
+    trip.status.cancelled = true;
+    trip.active = false;
+    trip.cost = 0;
+    trip.save();
+  }
+
+  return res.status(200).json({
+    success: 1,
+    data: "Successfully Canceled Trip",
+  });
+});

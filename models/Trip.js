@@ -3,13 +3,14 @@ const mongoose = require("mongoose");
 const tripSchema = new mongoose.Schema({
   captainId: { type: mongoose.Schema.Types.ObjectId, ref: "Captain" },
   passengerId: { type: mongoose.Schema.Types.ObjectId, ref: "Passenger" },
+  active: { type: Boolean, default: false },
   from: {
-    type: { type: String },
-    coordinates: [Number],
+    lat: String,
+    lon: String,
   },
   to: {
-    type: { type: String },
-    coordinates: [Number],
+    lat: String,
+    lon: String,
   },
   cost: { type: Number, default: 0 },
   paymentMethod: String,

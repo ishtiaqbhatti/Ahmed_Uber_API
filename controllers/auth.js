@@ -95,8 +95,8 @@ exports.updateUserById = asyncHandler(async (req, res, next) => {
 // Delete User
 exports.deleteUserById = asyncHandler(async (req, res, next) => {
   const id = req.params.id;
-  const { userData } = req.body;
-  const user = await User.findOneAndDelete({ _id: id }, userData);
+
+  const user = await User.findOneAndDelete({ _id: id });
   res.status(200).json({
     success: true,
     data: user,
@@ -113,6 +113,15 @@ exports.getUserStats = asyncHandler(async (req, res, next) => {
   res.status(200).json({
     success: true,
     data: stats,
+  });
+});
+
+exports.getAllUsersByType = asyncHandler(async (req, res, next) => {
+  const { type } = req.body;
+  const users = await User.find({ role: type });
+  return res.status(200).json({
+    success: true,
+    data: users,
   });
 });
 
