@@ -2,6 +2,7 @@ const asyncHandler = require("../middleware/async");
 
 const Captain = require("../models/Captain");
 const Feeback = require("../models/Feeback");
+const Trip = require("../models/Trip");
 const User = require("../models/User");
 const ErrorResponse = require("../utils/errorResponse");
 
@@ -41,6 +42,11 @@ exports.addFeeback = asyncHandler(async (req, res, next) => {
   criteriaPoints.map((criteria) => {
     if (criteria.point) totalPoints++;
   });
+
+  // Update Trip
+  const trip = await Trip.findOne({ _id: tripId });
+  trip.isFeedBackSubmitted = true;
+  await trip.save();
 
   const feedback = await Feeback.create({
     tripId,

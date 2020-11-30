@@ -40,9 +40,19 @@ io.on("connection", (socket) => {
     );
 
     // Broadcasting to all captains
-    io.emit("trip", passengerBroadcastObj);
+    io.emit("tripRequest", passengerBroadcastObj);
+  });
+
+  // Listen for Trip Data and broadcast every 5sec
+  socket.on("tripData", ({ location, passengerId, captainId }) => {
+    setTimeout(() => {
+      io.emit("trip", { location, passengerId, captainId });
+    }, 5000);
   });
 });
+
+// Set io to use in routes
+app.set("io", io);
 
 // Swagger
 const swaggerOptions = {
@@ -110,7 +120,6 @@ app.use(cors());
 
 // Set static folder
 app.use(express.static(path.join(__dirname, "public")));
-
 app.use("/api/auth", auth);
 app.use("/api/captain", captain);
 app.use("/api/admin", admin);

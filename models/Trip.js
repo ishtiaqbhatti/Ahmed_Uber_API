@@ -19,7 +19,7 @@ const tripSchema = new mongoose.Schema({
     completed: { type: Boolean, default: false },
     cancelled: { type: Boolean, default: false },
   },
-  feedback: { type: mongoose.Schema.Types.ObjectId, ref: "Feedback" },
+  isFeedBackSubmitted: { type: Boolean, default: false },
   createdAt: {
     type: Date,
     default: Date.now,
