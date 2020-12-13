@@ -49,7 +49,7 @@ exports.getTripById = asyncHandler(async (req, res, next) => {
 });
 
 exports.getAllTripsByCaptainId = asyncHandler(async (req, res, next) => {
-  const captainId = req.body.captainId;
+  const captainId = req.params.id;
   const tripsByCaptainId = await Trip.find({ captainId });
   return res.status(200).json({
     success: 1,

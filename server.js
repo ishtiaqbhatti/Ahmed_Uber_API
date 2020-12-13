@@ -17,7 +17,6 @@ const swaggerJsDoc = require("swagger-jsdoc");
 const swaggerUi = require("swagger-ui-express");
 const errorHandler = require("./middleware/error");
 const connectDB = require("./config/db");
-const passengerRequest = require("./utils/passengerRequest");
 
 // Load env vars
 dotenv.config({ path: "config/config.env" });
@@ -25,7 +24,7 @@ dotenv.config({ path: "config/config.env" });
 // Connect to database
 connectDB();
 const app = express();
-const app = express();
+
 const server = http.createServer(app);
 const io = socketio(server);
 
@@ -80,6 +79,9 @@ const swaggerDocs = swaggerJsDoc(swaggerOptions);
 app.use("/api-docs", swaggerUi.serve, swaggerUi.setup(swaggerDocs));
 const auth = require("./routes/auth");
 const captain = require("./routes/captain");
+const passenger = require("./routes/passenger");
+const feedback = require("./routes/feedback");
+const payment = require("./routes/payment");
 const admin = require("./routes/admin");
 const trip = require("./routes/trip");
 // parse application/x-www-form-urlencoded
@@ -124,6 +126,9 @@ app.use("/api/auth", auth);
 app.use("/api/captain", captain);
 app.use("/api/admin", admin);
 app.use("/api/trip", trip);
+app.use("/api/passenger", passenger);
+app.use("/api/feedback", feedback);
+app.use("/api/payment", payment);
 
 app.use(errorHandler);
 

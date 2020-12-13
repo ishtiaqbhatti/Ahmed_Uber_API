@@ -22,6 +22,7 @@ const userSchema = new mongoose.Schema({
   },
   role: { type: String, enum: ["admin", "captain", "passenger"] },
   verficiationStatus: { type: Boolean, default: false },
+  verificationToken: String,
   createdAt: {
     type: Date,
     default: Date.now,

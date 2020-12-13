@@ -21,7 +21,7 @@ exports.getAllPaymentsByCash = asyncHandler(async (req, res, next) => {
 exports.getAllPaymentsByCashByCaptainId = asyncHandler(
   async (req, res, next) => {
     const paymentsByCashByCaptainId = await Payment.find({
-      captainId: req.body.captainId,
+      captainId: req.params.id,
       paymentMethod: "cash",
     });
     return res.status(200).json({

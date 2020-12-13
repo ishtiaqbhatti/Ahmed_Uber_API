@@ -3,6 +3,7 @@ const swaggerJsdoc = require("swagger-jsdoc");
 const swaggerUi = require("swagger-ui-express");
 const {
   registerUser,
+  verifyUser,
   login,
   logout,
   getUsers,
@@ -79,6 +80,7 @@ router.post("/register", registerUser);
  *      '400':
  *        description: Bad request
  */
+router.post("/verify", verifyUser);
 router.post("/login", login);
 router.post("/logout", logout);
 /**
@@ -187,7 +189,7 @@ router.get("/user/:id", protect, authorize("admin"), getUserById);
  *      '404':
  *        description: Not Found
  */
-router.put("/user/:id", protect, authorize("admin"), updateUserById);
+router.put("/user/:id", protect, updateUserById);
 /**
  * @swagger
  * /api/auth/user/{id}:

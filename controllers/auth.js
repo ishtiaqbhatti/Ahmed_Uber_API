@@ -14,11 +14,35 @@ exports.registerUser = asyncHandler(async (req, res, next) => {
   const isFound = await User.findOne({ phoneNumber });
   if (isFound) return next(new ErrorResponse("User already exists", 409));
   // Create user
+  if (req.body.role === "captain") {
+    //Generating Verification Token
+    const verificationToken = Math.random().toString(36).substring(7);
+    req.body.verificationToken = verificationToken;
+  } else {
+    req.body.verficiationStatus = true;
+  }
   const user = await User.create(req.body);
   return res.status(200).json({
     success: 1,
     message: `User with role ${user.role} successfully created`,
+    data: user,
   });
+});
+
+exports.verifyUser = asyncHandler(async (req, res, next) => {
+  const { verificationToken } = req.body;
+  const verification = await User.findOne({ verificationToken });
+  if (verification) {
+    verification.verificationStatus = true;
+    verification.verificationToken = "";
+    await verification.save();
+    sendTokenResponse(verification, 200, res);
+  } else {
+    return res.status(401).json({
+      success: 0,
+      message: "Verification token not found",
+    });
+  }
 });
 
 // @desc      Login user

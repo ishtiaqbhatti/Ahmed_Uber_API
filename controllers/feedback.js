@@ -1,7 +1,7 @@
 const asyncHandler = require("../middleware/async");
 
 const Captain = require("../models/Captain");
-const Feeback = require("../models/Feeback");
+const Feeback = require("../models/Feedback");
 const Trip = require("../models/Trip");
 const User = require("../models/User");
 const ErrorResponse = require("../utils/errorResponse");
@@ -90,7 +90,7 @@ exports.getFeebacksByCaptainId = asyncHandler(async (req, res, next) => {
 const checkCaptainLevel = async (captainId) => {
   try {
     const captain = await Captain.findOne({ _id: captainId }).populate("trips");
-    const completedTrips;
+    let completedTrips = 0;
     captain.trips.map((trip) => {
       if (trip.status.completed) completedTrips++;
     });
