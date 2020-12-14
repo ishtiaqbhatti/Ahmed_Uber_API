@@ -6,10 +6,6 @@ const Trip = require("../models/Trip");
 const User = require("../models/User");
 const ErrorResponse = require("../utils/errorResponse");
 
-// @desc    Register User (Roles: employee, admin)
-// @oute    POST /api/auth/register
-// @access  Public
-
 exports.getFeebackCriteria = asyncHandler(async (req, res, next) => {
   const feedBackCriteria = {
     titleEn: [
