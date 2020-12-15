@@ -8,9 +8,9 @@ exports.addPassengerProfile = asyncHandler(async (req, res, next) => {
   // Chekf if userId exists
   const userIdFound = await User.findOne({ _id: userId });
   if (!userIdFound) return next(new ErrorResponse("UserId not exists", 409));
-  const { name, idPhoto, licensePhoto } = req.body;
+  const { name, email, paymentMethod } = req.body;
   // Create captain profile
-  await Passenger.create(req.body);
+  await Passenger.create({ name, email, paymentMethod });
   return res.status(200).json({
     success: 1,
     message: `Passenger profile successfully created`,

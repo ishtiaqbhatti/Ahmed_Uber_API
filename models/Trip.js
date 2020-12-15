@@ -2,6 +2,7 @@ const mongoose = require("mongoose");
 
 const tripSchema = new mongoose.Schema({
   captainId: { type: mongoose.Schema.Types.ObjectId, ref: "Captain" },
+  sessionId: { type: String },
   passengerId: { type: mongoose.Schema.Types.ObjectId, ref: "Passenger" },
   active: { type: Boolean, default: false },
   from: {

@@ -1,3 +1,4 @@
+const { v4: uuidv4 } = require("uuid");
 const passengerRequest = ({ from, to, passengerId, paymentMethod }) => {
   const distance = calculateDistance(from.lat, from.lon, to.lat, to.lon);
   const cost = 1.5 + distance * 0.2;
@@ -8,6 +9,7 @@ const passengerRequest = ({ from, to, passengerId, paymentMethod }) => {
     cost,
     passengerId,
     paymentMethod,
+    sessionId: uuidv4(),
   };
   return broadCastObject;
 };

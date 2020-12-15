@@ -1,33 +1,51 @@
 const asyncHandler = require("../middleware/async");
 const socketio = require("socket.io");
+const { v4: uuidv4 } = require("uuid");
 const Captain = require("../models/Captain");
 const Trip = require("../models/Trip");
 const ErrorResponse = require("../utils/errorResponse");
 const Payment = require("../models/Payment");
-
+const passengerRequest = require("../utils/passengerRequest");
 // @desc    Register User (Roles: employee, admin)
 // @oute    POST /api/auth/register
 // @access  Public
 
 exports.createTrip = asyncHandler(async (req, res, next) => {
-  const { from, to, passengerId, captainId, paymentMethod, cost } = req.body;
-  const io = req.app.get("io");
-  const trip = await Trip.create({
+  const { from, to, passengerId, paymentMethod } = req.body;
+  const passengerRequestBody = passengerRequest(
     from,
     to,
     passengerId,
-    captainId,
-    cost,
-    paymentMethod,
-  });
+    paymentMethod
+  );
+  const io = req.app.get("io");
+  const trip = await Trip.create(passengerRequestBody);
 
-  trip.status.assigned = true;
-  trip.save();
-
-  io.emit("tripAccepted", trip);
+  if (trip)
+    io.emit("tripRequested", {
+      tripId: trip._id,
+      from: trip.from,
+      to: trip.to,
+      cost: trip.cost,
+    });
   return res.status(200).json({
     success: 1,
     message: `Trip succesfully created ${trip}`,
+  });
+});
+
+exports.acceptTrip = asyncHandler(async (req, res, next) => {
+  const { tripId, captainId } = req.body;
+  const trip = await Trip.find({ _id: tripId });
+  trip.captainId = captainId;
+  trip.status.assigned = true;
+  await trip.save();
+  const io = req.app.get("io");
+
+  io.emit("tripAccepted", { tripId: trip._id });
+  return res.status(200).json({
+    success: 1,
+    message: `Trip succesfully accepted ${trip}`,
   });
 });
 
@@ -58,12 +76,12 @@ exports.getAllTripsByCaptainId = asyncHandler(async (req, res, next) => {
 });
 
 exports.completeTrip = asyncHandler(async (req, res, next) => {
-  const { tripId } = req.body;
-  const trip = await Trip.findOne({ tripId, active });
+  const { tripId, sessionId } = req.body;
+  const trip = await Trip.findOne({ tripId, active, sessionId });
   if (trip) {
     trip.status.completed = true;
     trip.active = false;
-    trip.save();
+    await trip.save();
   }
 
   return res.status(200).json({
@@ -73,13 +91,13 @@ exports.completeTrip = asyncHandler(async (req, res, next) => {
 });
 
 exports.cancelTrip = asyncHandler(async (req, res, next) => {
-  const { tripId } = req.body;
-  const trip = await Trip.findOne({ tripId, active });
+  const { tripId, sessionId } = req.body;
+  const trip = await Trip.findOne({ tripId, active, sessionId });
   if (trip) {
     trip.status.cancelled = true;
     trip.active = false;
     trip.cost = 0;
-    trip.save();
+    await trip.save();
   }
 
   return res.status(200).json({

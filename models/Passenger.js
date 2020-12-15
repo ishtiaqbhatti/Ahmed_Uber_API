@@ -6,9 +6,13 @@ const passengerSchema = new mongoose.Schema({
     type: String,
     required: [true, "Please add your phone number"],
   },
-  idPhoto: String,
+  email: String,
   paymentMethod: { type: String, enum: ["cash", "card"], default: "cash" },
-  level: { type: String, enum: ["new", "gold", "platinum", "diamond"] },
+  level: {
+    type: String,
+    enum: ["new", "gold", "platinum", "diamond"],
+    default: "new",
+  },
   trips: [{ type: mongoose.Schema.Types.ObjectId, ref: "Trip" }],
   points: Number,
   createdAt: {
